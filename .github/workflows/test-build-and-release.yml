@@ -3,6 +3,22 @@ name: Test, build and release
 on: [push]
 
 jobs:
+  static-analysis:
+    name: Linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install linter
+        run: |
+          sudo apt install splint
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Run linter
+        run: |
+          splint --compdef --exportlocal simplecalculator.c operations.c
+
   unit-test:
     name: Unit test
     runs-on: ubuntu-latest
@@ -29,7 +45,7 @@ jobs:
     name: Build and delivery
     permissions:
       contents: write
-    needs: [unit-test]
+    needs: [unit-test, static-analysis]
     runs-on: ubuntu-latest
 
     steps:
